@@ -1,2 +1,8 @@
 # akashdobariya.github.io
-Akash Dobariya - PHP Web Developer
+Hi,
+
+I am Akash Dobariya
+
+This is my profile website akashdobariya.github.io.
+
+Thanks for visiting.
