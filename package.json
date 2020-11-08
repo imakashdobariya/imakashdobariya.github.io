@@ -1,0 +1,27 @@
+﻿{
+  "name": "akashdobariya.github.io",
+  "version": "1.0.0",
+  "description": "Portfolio of Akash Dobariya, PHP Web developer and Mobile App Developer based in Gandhinagar, India",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "lite-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imakashdobariya/akashdobariya.github.io.git"
+  },
+  "keywords": [
+    "php",
+	"wordpress",
+    "Akash",
+    "Dobariya",
+    "personal",
+    "portfolio",
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/imakashdobariya/akashdobariya.github.io/issues"
+  },
+  "homepage": "https://github.com/imakashdobariya/akashdobariya.github.io#readme"
+}	
