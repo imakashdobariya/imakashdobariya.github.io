@@ -503,7 +503,7 @@ a.back-to-top:hover, a.back-to-top:focus {
 }
 
 .indigo {
-  background: #fff;
+  background: transparent;
 }
 
 .menu-bg {
@@ -520,11 +520,11 @@ a.back-to-top:hover, a.back-to-top:focus {
 }
 
 .navbar-expand-lg .navbar-nav .nav-link i:hover {
-  color: #21cff3;
+  color: #8ae8ff;
 }
 
 .navbar-expand-lg .navbar-nav .nav-link {
-  color: #333;
+  color: #fff;
   font-weight: 700;
   padding: 0 17px;
   margin-top: 15px;
