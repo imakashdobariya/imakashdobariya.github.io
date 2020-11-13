@@ -550,7 +550,7 @@ a.back-to-top:hover, a.back-to-top:focus {
 }
 
 .navbar li.active a.nav-link {
-  color: #004758;
+  color: #83e5fd;
 }
 
 .dropdown-toggle::after {
@@ -724,7 +724,7 @@ a.back-to-top:hover, a.back-to-top:focus {
   height: 100%;
   top: 0px;
   left: 0px;
-  background: #0c0808;
+  /*background: #0c0808;*/
   opacity: 0.6;
 }
 
