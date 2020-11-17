@@ -39,9 +39,11 @@
         allowParentLinks: true,
         duplicate: true,
         label: '',
+		closeOnClick:true,
         closedSymbol: '<i class="icon-arrow-right"></i>',
         openedSymbol: '<i class="icon-arrow-down"></i>',
       });
+
 
       /* WOW Scroll Spy
     ========================================================*/
