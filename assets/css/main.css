@@ -50,7 +50,7 @@ p {
   font-weight: 400;
   font-family: "Source Sans Pro", sans-serif;
   margin: 0px;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 ul, ol {
@@ -63,6 +63,9 @@ ul li, ol li {
   list-style: none;
 }
 
+.hide  {
+	display:none;
+} 
 .hero-heading {
   font-size: 48px;
   font-weight: 700;
@@ -104,6 +107,7 @@ ul li, ol li {
   color: #252525;
   font-size: 38px;
   text-align: center;
+  text-transform:uppercase;
   letter-spacing: 1px;
   line-height: 1;
   margin-bottom: 48px;
@@ -993,8 +997,8 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover {
 }
 
 .contact-form-area {
-  background: #fff;
-  box-shadow: 0 0 30px #ededed;
+  /*background: #fff;
+  box-shadow: 0 0 30px #ededed;*/
   padding: 60px 40px;
 }
 
@@ -1051,6 +1055,7 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover {
 }
 
 #contact {
+  background:#000000;
   position: relative;
   overflow: hidden;
 }
@@ -1082,17 +1087,20 @@ a:not([href]):not([tabindex]):focus, a:not([href]):not([tabindex]):hover {
 
 /* Footer Area Start */
 .footer-area {
-  background: #1C1C20;
+  background: #000000;
 }
 
 .footer-area .footer-text p {
   font-size: 14px;
-  margin-top: 20px;
   color: #fff;
 }
 
+.footer-area .footer-text p span {
+  color:#83e5fd;
+}	
+
 .footer-area .footer-text p a {
-  color: #004758;
+  color:#83e5fd;
 }
 
 .footer-area .footer-text .nav-inline .nav-link {
