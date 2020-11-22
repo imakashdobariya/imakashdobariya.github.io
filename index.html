@@ -164,12 +164,11 @@
           </div> 
           <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
             <div class="profile-wrapper wow fadeInRight" data-wow-delay="0.3s">
-              <h3>Hi Guys!</h3>
-              <p>Est diam venenatis arcu lacus ad. Duis quis eros. Cursus et rutrum eleifend sollicitudin lacinia justo id turpis. Nec convallis integer. Odio eget duis. Nulla aenean et. Blandit varius sollicitudin. Pellentesque leo primis neque urna magnis. Elit ut sollicitudin. Et est a nam dolores eget itaque sagittis et parturient duis est eleifend sociis rutrum odio viverra integer.</p>
-              <div class="about-profile">
+              <h3>Who's this guy?</h3>
+              <p>Hi, I'm Akash Dobariya, an experienced PHP Web Developer and Mobile App Developer from India, currently working at TechRational.com as a Senior Web & Mobile Apps Developer. I have serious passion for web technologies to build websites and apps that looks great, feel fantastic, dynamic user experiences, device friendly, and function correctly.</p>
+              <div class="about-profile hide">
                 <ul class="admin-profile">
-                  <li><span class="pro-title"> Name </span> <span class="pro-detail">Tom Saulnier</span></li>
-                  <li><span class="pro-title"> Experience </span> <span class="pro-detail">7 Years</span></li>
+                  <li><span class="pro-title"> Name </span> <span class="pro-detail">Akash Dobariya</span></li>
                   <li><span class="pro-title"> Freelance </span> <span class="pro-detail">Available</span></li>
                 </ul>
               </div>
@@ -554,7 +553,7 @@ https://colorlib.com/go/leven-demo
                   <a class="instagram" href="#"><i class="icon-social-google"></i></a>
                 </li>
               </ul>-->
-              <p>Copyright © 2020 Akash. All Right Reserved.</p>
+              <p>AKASH DOBARIYA <span>©2020</span></p>
             </div>
           </div>
         </div>
@@ -581,18 +580,19 @@ https://colorlib.com/go/leven-demo
     <script src="assets/js/jquery.slicknav.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/scrolling-nav.js"></script>
-	  
+	<script src="assets/js/particles.js"></script>
+	<script src="assets/js/app.js"></script>
+	<script src="assets/js/lib/stats.js"></script>
+	
  <script>
   window.addEventListener("DOMContentLoaded", function() {
 
     // get the form elements defined in your form HTML above
-    
     var form = document.getElementById("contactForm");
     var button = document.getElementById("submit");
     var status = document.getElementById("my-form-status");
 
     // Success and Error functions for after the form is submitted
-    
     function success() {
       form.reset();
       button.style = "display: none ";
@@ -604,7 +604,6 @@ https://colorlib.com/go/leven-demo
     }
 
     // handle the form submission event
-
     form.addEventListener("submit", function(ev) {
       ev.preventDefault();
       var data = new FormData(form);
@@ -613,7 +612,6 @@ https://colorlib.com/go/leven-demo
   });
   
   // helper function for sending an AJAX request
-
   function ajax(method, url, data, success, error) {
     var xhr = new XMLHttpRequest();
     xhr.open(method, url);
@@ -628,6 +626,7 @@ https://colorlib.com/go/leven-demo
     };
     xhr.send(data);
   }
+  
 </script>
       
   </body>
