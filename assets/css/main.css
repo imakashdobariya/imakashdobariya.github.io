@@ -724,14 +724,24 @@ a.back-to-top:hover, a.back-to-top:focus {
 3. Hero Area
 ========================================================================== */
 .hero-area-bg {
-  background: url(../img/hero-area.jpg) no-repeat;
-  background-size: cover;
+  /*background: url(../img/hero-area.jpg) no-repeat;
+  background-size: cover;*/
 }
 
+#particles-js {
+	position:relative;
+}
+#particles-js .particles-js-canvas-el {
+	background: url(../img/hero-area.jpg) no-repeat;
+  background-size: cover;
+	position:absolute;
+	top:0;
+}
 #hero-area {
   color: #fff;
   overflow: hidden;
   position: relative;
+  z-index:9;
 }
 
 #hero-area .overlay {
@@ -763,6 +773,7 @@ a.back-to-top:hover, a.back-to-top:focus {
   letter-spacing: 10px;
   text-transform: uppercase;
   font-weight: 700;
+  margin:12px 0px 6px 0px;
 }
 
 #hero-area .contents p {
