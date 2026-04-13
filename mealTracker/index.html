@@ -266,6 +266,13 @@
 let employees  = JSON.parse(localStorage.getItem('mt_employees')  || '[]');
 let attendance = JSON.parse(localStorage.getItem('mt_attendance') || '{}');
 let settings   = JSON.parse(localStorage.getItem('mt_settings')   || '{}');
+if (!settings.sheetsUrl) {
+  settings = {
+    sheetsUrl: "https://script.google.com/macros/s/AKfycbwCN9u5JqXGn-KkT50oMNaS-1C4wuuaysLO1R-c17SnuEVpmeoRfTTDfDovhqfz1nnYDA/exec",
+    empSheet: "Employees",
+    attSheet: "MealAttendance"
+  };
+}
 let currentMeal = 'Breakfast';
 let empLoading  = false;
 
