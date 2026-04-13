@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Meal Attendance — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #14171f;
+    --surface2: #1c2030;
+    --border: #252a38;
+    --accent-b: #f59e42;
+    --accent-l: #38c9a8;
+    --accent-d: #e05c7a;
+    --text: #e8ecf5;
+    --muted: #7a8299;
+    --radius: 14px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.35rem; letter-spacing: -0.5px; }
+  .logo span { color: var(--accent-b); }
+  .date-badge { font-size: .82rem; color: var(--muted); background: var(--surface2); padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border); }
+
+  .container { max-width: 1300px; margin: 0 auto; padding: 32px 24px; }
+
+  .page-tabs { display: flex; gap: 8px; margin-bottom: 28px; }
+  .page-tab { padding: 9px 22px; border-radius: 8px; cursor: pointer; background: var(--surface); border: 1px solid var(--border); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 500; transition: all .18s; }
+  .page-tab.active { background: var(--accent-b); color: #0d0f14; border-color: var(--accent-b); }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 14px; }
+  .top-bar h1 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.6rem; }
+  .top-bar-right { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+  .btn { padding: 9px 20px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 500; cursor: pointer; border: none; transition: all .18s; display: inline-flex; align-items: center; gap: 7px; }
+  .btn-primary { background: var(--accent-b); color: #0d0f14; }
+  .btn-primary:hover { filter: brightness(1.12); transform: translateY(-1px); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; filter: none; }
+  .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--accent-b); color: var(--accent-b); }
+  .btn-sm { padding: 6px 13px; font-size: .8rem; border-radius: 6px; }
+
+  .meal-tabs { display: flex; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 5px; margin-bottom: 26px; width: fit-content; gap: 0; }
+  .meal-tab { padding: 10px 28px; border-radius: 10px; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 600; font-size: .92rem; color: var(--muted); transition: all .2s; border: none; background: transparent; display: flex; align-items: center; gap: 8px; }
+  .meal-tab.active { color: #0d0f14; }
+  .meal-tab[data-meal="Breakfast"].active { background: var(--accent-b); }
+  .meal-tab[data-meal="Lunch"].active { background: var(--accent-l); }
+  .meal-tab[data-meal="Dinner"].active { background: var(--accent-d); }
+  .meal-tab:hover:not(.active) { color: var(--text); background: var(--surface2); }
+
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 26px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; }
+  .stat-label { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; }
+  .stat-value.b { color: var(--accent-b); } .stat-value.l { color: var(--accent-l); } .stat-value.d { color: var(--accent-d); } .stat-value.t { color: var(--text); }
+
+  .table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .table-head { display: flex; align-items: center; padding: 14px 20px; border-bottom: 1px solid var(--border); gap: 12px; flex-wrap: wrap; }
+  .table-head h2 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; flex: 1; }
+  .search-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: .875rem; outline: none; width: 200px; transition: border-color .2s; }
+  .search-box:focus { border-color: var(--accent-b); }
+  .search-box::placeholder { color: var(--muted); }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--surface2); }
+  th { text-align: left; padding: 13px 20px; font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--muted); white-space: nowrap; }
+  td { padding: 13px 20px; border-top: 1px solid var(--border); font-size: .9rem; vertical-align: middle; }
+  tr:hover td { background: rgba(255,255,255,.025); }
+  .emp-name { font-weight: 500; }
+  .emp-sub { font-size: .78rem; color: var(--muted); margin-top: 2px; }
+
+  .toggle { position: relative; width: 44px; height: 24px; cursor: pointer; }
+  .toggle input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; inset: 0; background: var(--border); border-radius: 999px; transition: .25s; }
+  .slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; background: var(--muted); border-radius: 50%; transition: .25s; }
+  .toggle input:checked + .slider { background: var(--accent-l); }
+  .toggle input:checked + .slider.b-s { background: var(--accent-b); }
+  .toggle input:checked + .slider.d-s { background: var(--accent-d); }
+  .toggle input:checked + .slider::before { transform: translateX(20px); background: #fff; }
+  .toggle-wrap { display: flex; align-items: center; gap: 10px; justify-content: center; }
+  .toggle-label { font-size: .82rem; font-weight: 500; }
+  .toggle-label.on { color: var(--accent-l); } .toggle-label.b-on { color: var(--accent-b); } .toggle-label.d-on { color: var(--accent-d); } .toggle-label.off { color: var(--muted); }
+
+  .bulk-bar { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; background: var(--surface2); border-top: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+  .bulk-bar span { font-size: .85rem; color: var(--muted); }
+
+  .empty-row td, .loading-row td { text-align: center; padding: 48px; color: var(--muted); font-size: .9rem; }
+  .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent-b); border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .settings-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 24px; margin-bottom: 24px; }
+  .settings-section h3 { font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 16px; font-size: 1rem; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: .8rem; font-weight: 500; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+  .form-input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: .9rem; outline: none; transition: border-color .2s; }
+  .form-input:focus { border-color: var(--accent-b); }
+
+  .status-pill { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; padding: 4px 11px; border-radius: 999px; font-weight: 500; }
+  .status-pill.connected    { background: #0e2e22; color: var(--accent-l); border: 1px solid #1a5040; }
+  .status-pill.disconnected { background: #2e1018; color: var(--accent-d); border: 1px solid #5c2030; }
+  .status-pill.loading      { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+  .banner { background: #1a1e2c; border: 1px solid var(--border); border-left: 3px solid var(--accent-b); border-radius: 10px; padding: 14px 18px; margin-bottom: 24px; font-size: .875rem; color: var(--muted); line-height: 1.7; }
+  .banner strong { color: var(--text); }
+
+  .toast-wrap { position: fixed; bottom: 28px; right: 28px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; pointer-events: none; }
+  .toast { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 13px 18px; font-size: .875rem; display: flex; align-items: center; gap: 10px; max-width: 340px; animation: slideIn .25s ease; box-shadow: 0 8px 32px rgba(0,0,0,.4); }
+  .toast.success { border-color: var(--accent-l); }
+  .toast.error   { border-color: var(--accent-d); }
+  @keyframes slideIn { from { transform: translateX(60px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  input[type="checkbox"].row-check { width: 16px; height: 16px; accent-color: var(--accent-b); cursor: pointer; }
+  code { background: var(--bg); padding: 2px 7px; border-radius: 4px; font-size: .82rem; color: var(--accent-l); border: 1px solid var(--border); }
+
+  @media (max-width: 640px) {
+    .meal-tabs { flex-direction: column; width: 100%; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    header { padding: 14px 16px; }
+    .container { padding: 20px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Meal<span>Track</span> <span style="font-weight:400;font-size:.9rem;color:var(--muted)">Admin</span></div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <div id="connStatus" class="status-pill disconnected"><span class="dot"></span> Not configured</div>
+    <div class="date-badge" id="headerDate"></div>
+    <button class="btn btn-ghost btn-sm" onclick="openPage('settings')">⚙ Settings</button>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="page-tabs">
+    <button class="page-tab active" data-page="attendance" onclick="openPage('attendance')">📋 Attendance</button>
+    <button class="page-tab"        data-page="settings"   onclick="openPage('settings')">⚙ Settings</button>
+  </div>
+
+  <!-- ═══════════════ ATTENDANCE PAGE ═══════════════ -->
+  <div class="page active" id="page-attendance">
+
+    <div class="top-bar">
+      <div>
+        <h1>Daily Meal Attendance</h1>
+        <div id="subDate" style="font-size:.85rem;color:var(--muted);margin-top:4px;"></div>
+      </div>
+      <div class="top-bar-right">
+        <input type="date" id="datePicker" class="form-input" style="width:170px;" />
+        <button class="btn btn-ghost" onclick="reloadEmployees()">↻ Sync Employees</button>
+        <button class="btn btn-ghost" onclick="markAll(true)">✔ Mark All Present</button>
+        <button class="btn btn-ghost" onclick="markAll(false)">✘ Reset All Absent</button>
+        <button class="btn btn-primary" id="saveBtn" onclick="saveToSheets()">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save to Google Sheets
+        </button>
+      </div>
+    </div>
+
+    <div class="meal-tabs">
+      <button class="meal-tab active" data-meal="Breakfast" onclick="switchMeal('Breakfast')">🌅 Breakfast</button>
+      <button class="meal-tab"        data-meal="Lunch"     onclick="switchMeal('Lunch')">☀ Lunch</button>
+      <button class="meal-tab"        data-meal="Dinner"    onclick="switchMeal('Dinner')">🌙 Dinner</button>
+    </div>
+
+    <div class="stats-row" id="statsRow"></div>
+
+    <div class="table-wrap">
+      <div class="table-head">
+        <h2 id="tableTitle">Breakfast Attendance</h2>
+        <input class="search-box" id="searchBox" type="text" placeholder="🔍 Search…" oninput="renderTable()" />
+        <button class="btn btn-ghost btn-sm" onclick="reloadEmployees()">↻ Refresh List</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:36px;"><input type="checkbox" class="row-check" id="selectAll" onchange="toggleSelectAll(this)" /></th>
+            <th>#</th>
+            <th>Employee</th>
+            <th>Department</th>
+            <th>Emp ID</th>
+            <th style="text-align:center;">Present</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="bulk-bar">
+        <span id="bulkInfo">0 selected</span>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-ghost btn-sm" onclick="bulkSet(true)">Mark Selected Present</button>
+          <button class="btn btn-ghost btn-sm" onclick="bulkSet(false)">Mark Selected Absent</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SETTINGS PAGE ═══════════════ -->
+  <div class="page" id="page-settings">
+    <div class="top-bar"><h1>Settings</h1></div>
+
+    <div class="banner">
+      <strong>How it works:</strong> A single Google Apps Script Web App powers everything.
+      It reads employees from your <em>Employees</em> sheet tab and writes daily attendance to your <em>MealAttendance</em> tab.
+      Deploy it once, paste the URL below — done.
+    </div>
+
+    <div class="settings-section">
+      <h3>🔗 Google Sheets Connection</h3>
+      <div class="form-group">
+        <label>Apps Script Web App URL</label>
+        <input class="form-input" id="sheetsUrl" placeholder="https://script.google.com/macros/s/…/exec" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-group">
+          <label>Employees Tab Name</label>
+          <input class="form-input" id="empSheet" placeholder="Employees" value="Employees" />
+        </div>
+        <div class="form-group">
+          <label>Attendance Tab Name</label>
+          <input class="form-input" id="attSheet" placeholder="MealAttendance" value="MealAttendance" />
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Save &amp; Connect</button>
+        <button class="btn btn-ghost"   onclick="testConnection()">⚡ Test Connection</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>📋 Setup Guide — Google Apps Script</h3>
+      <ol style="font-size:.875rem;color:var(--muted);line-height:2.2;padding-left:1.5em;margin-bottom:20px;">
+        <li>Open (or create) a Google Sheet</li>
+        <li>Create two tabs: <code>Employees</code> and <code>MealAttendance</code></li>
+        <li>In the <code>Employees</code> tab, row 1 must have these headers: <code>ID</code> &nbsp;|&nbsp; <code>Name</code> &nbsp;|&nbsp; <code>Department</code></li>
+        <li>Fill in your employee rows starting from row 2</li>
+        <li>Go to <strong style="color:var(--text)">Extensions → Apps Script</strong>, replace all existing code with the script below</li>
+        <li>Click <strong style="color:var(--text)">Deploy → New Deployment → Web App</strong></li>
+        <li>Set <em>Execute as: <strong style="color:var(--text)">Me</strong></em> &nbsp;and&nbsp; <em>Who has access: <strong style="color:var(--text)">Anyone</strong></em></li>
+        <li>Copy the deployment URL → paste it above → click <strong style="color:var(--text)">Save &amp; Connect</strong></li>
+      </ol>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ──────────────────────────────────────────────
+//  STATE
+// ──────────────────────────────────────────────
+let employees  = JSON.parse(localStorage.getItem('mt_employees')  || '[]');
+let attendance = JSON.parse(localStorage.getItem('mt_attendance') || '{}');
+let settings   = JSON.parse(localStorage.getItem('mt_settings')   || '{}');
+let currentMeal = 'Breakfast';
+let empLoading  = false;
+
+// ──────────────────────────────────────────────
+//  UTILITIES
+// ──────────────────────────────────────────────
+const todayStr  = () => new Date().toISOString().split('T')[0];
+const getDate   = () => document.getElementById('datePicker').value || todayStr();
+const attKey    = (d,m,id) => `${d}__${m}__${id}`;
+const isPresent = (d,m,id) => attendance[attKey(d,m,id)] === true; // default = absent
+
+function saveLocal() {
+  localStorage.setItem('mt_employees',  JSON.stringify(employees));
+  localStorage.setItem('mt_attendance', JSON.stringify(attendance));
+  localStorage.setItem('mt_settings',   JSON.stringify(settings));
+}
+
+function toast(msg, type='success', ms=4000) {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${type==='success'?'✅':'❌'}</span><span>${msg}</span>`;
+  document.getElementById('toastWrap').appendChild(el);
+  setTimeout(() => el.remove(), ms);
+}
+
+function setStatus(state, label) {
+  const el = document.getElementById('connStatus');
+  el.className = `status-pill ${state}`;
+  el.innerHTML = `<span class="dot"></span> ${label}`;
+}
+
+// ──────────────────────────────────────────────
+//  LOAD EMPLOYEES FROM SHEETS
+// ──────────────────────────────────────────────
+async function reloadEmployees() {
+  if (!settings.sheetsUrl) { toast('Configure your Apps Script URL in Settings first.', 'error'); openPage('settings'); return; }
+  if (empLoading) return;
+  empLoading = true;
+  setStatus('loading', 'Loading…');
+  document.getElementById('tbody').innerHTML = `<tr class="loading-row"><td colspan="6"><span class="spinner"></span>Fetching employees from Google Sheets…</td></tr>`;
+
+  try {
+    const url  = `${settings.sheetsUrl}?action=getEmployees&sheet=${encodeURIComponent(settings.empSheet||'Employees')}`;
+    const res  = await fetch(url);
+    const data = await res.json();
+    if (data.status === 'ok') {
+      document.getElementById('tbody').innerHTML = `<tr class="loading-row"><td colspan="6"></td></tr>`;
+      employees = data.employees;
+      saveLocal();
+      setStatus('connected', `Connected · ${employees.length} employees`);
+      toast(`Loaded ${employees.length} employees`, 'success');
+      renderAll();
+    } else {
+      setStatus('disconnected', 'Error');
+      toast('Sheets error: ' + data.message, 'error');
+      renderTable();
+    }
+  } catch(err) {
+    setStatus('disconnected', 'Unreachable');
+    toast('Could not reach Apps Script. Check the URL and deployment.', 'error');
+    renderTable();
+  }
+  empLoading = false;
+}
+
+// ──────────────────────────────────────────────
+//  SAVE ATTENDANCE TO SHEETS
+// ──────────────────────────────────────────────
+async function saveToSheets() {
+  if (!settings.sheetsUrl) { toast('Configure your Apps Script URL in Settings first.', 'error'); openPage('settings'); return; }
+  if (employees.length === 0) { toast('No employees loaded. Click "Sync Employees" first.', 'error'); return; }
+
+  const date     = getDate();
+  const attSheet = settings.attSheet || 'MealAttendance';
+  const rows     = [];
+  ['Breakfast','Lunch','Dinner'].forEach(meal => {
+    employees.forEach(e => {
+      rows.push({ date, meal, empId: e.id, name: e.name, dept: e.dept||'', present: isPresent(date, meal, e.id) });
+    });
+  });
+
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Saving…';
+
+  try {
+    const res  = await fetch(settings.sheetsUrl, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'saveAttendance', rows, sheetName: attSheet }),
+    });
+    const data = await res.json();
+    if (data.status === 'ok') {
+      toast(`Saved records for ${date} to Sheets`, 'success');
+    } else {
+      toast('Error: ' + data.message, 'error');
+    }
+  } catch {
+    toast('Network error. Verify your Apps Script URL.', 'error');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save to Google Sheets`;
+}
+
+// ──────────────────────────────────────────────
+//  RENDER
+// ──────────────────────────────────────────────
+function renderAll() { renderStats(); renderTable(); }
+
+function renderStats() {
+  const date = getDate();
+  const defs = [['Breakfast','🌅','b'],['Lunch','☀','l'],['Dinner','🌙','d']];
+  document.getElementById('statsRow').innerHTML =
+    defs.map(([m,icon,cls]) => {
+      const presentCnt = employees.filter(e => isPresent(date,m,e.id)).length;
+      const absentCnt  = employees.length - presentCnt;
+      return `<div class="stat-card">
+        <div class="stat-label">${icon} ${m}</div>
+        <div style="display:flex;align-items:baseline;gap:10px;margin-top:4px;">
+          <div class="stat-value ${cls}" title="Present">${presentCnt}<span style="font-size:.78rem;font-weight:500;margin-left:3px;color:var(--muted)">present</span></div>
+          <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--accent-d)" title="Absent">${absentCnt}<span style="font-size:.72rem;font-weight:500;margin-left:2px;color:var(--muted)">absent</span></div>
+        </div>
+      </div>`;
+    }).join('') +
+    `<div class="stat-card">
+      <div class="stat-label">👥 Total Employees</div>
+      <div class="stat-value t">${employees.length}</div>
+    </div>`;
+}
+
+function renderTable() {
+  const date = getDate();
+  const q    = (document.getElementById('searchBox')?.value || '').toLowerCase();
+
+  if (empLoading) return; // already set by reloadEmployees
+
+  if (!settings.sheetsUrl) {
+    document.getElementById('tbody').innerHTML = `<tr class="empty-row"><td colspan="6">
+      ⚙ Please go to <strong>Settings</strong> and enter your Apps Script URL to get started.
+    </td></tr>`;
+    return;
+  }
+  if (employees.length === 0) {
+    document.getElementById('tbody').innerHTML = `<tr class="empty-row"><td colspan="6">
+      No employees loaded. Click <strong>↻ Sync Employees</strong> to pull the list from your Google Sheet.
+    </td></tr>`;
+    return;
+  }
+
+  const filtered = employees.filter(e =>
+    e.name.toLowerCase().includes(q) ||
+    (e.dept||'').toLowerCase().includes(q) ||
+    (e.id||'').toLowerCase().includes(q)
+  );
+
+  if (filtered.length === 0) {
+    document.getElementById('tbody').innerHTML = `<tr class="empty-row"><td colspan="6">No employees match your search.</td></tr>`;
+    return;
+  }
+
+  const sliderCls  = currentMeal==='Breakfast' ? 'b-s' : currentMeal==='Dinner' ? 'd-s' : '';
+  const labelOnCls = currentMeal==='Breakfast' ? 'b-on' : currentMeal==='Dinner' ? 'd-on' : 'on';
+
+  document.getElementById('tbody').innerHTML = filtered.map((e,i) => {
+    const present = isPresent(date, currentMeal, e.id);
+    return `<tr>
+      <td><input type="checkbox" class="row-check emp-check" data-id="${e.id}" onchange="updateBulkInfo()" /></td>
+      <td style="color:var(--muted);font-size:.82rem;">${i+1}</td>
+      <td><div class="emp-name">${e.name}</div></td>
+      <td style="color:var(--muted);font-size:.85rem;">${e.dept||'—'}</td>
+      <td style="color:var(--muted);font-size:.85rem;">${e.id||'—'}</td>
+      <td style="text-align:center;">
+        <div class="toggle-wrap">
+          <label class="toggle">
+            <input type="checkbox" ${present?'checked':''} onchange="toggleEmp('${e.id}',this.checked)" />
+            <span class="slider ${present ? sliderCls : ''}"></span>
+          </label>
+          <span class="toggle-label ${present ? labelOnCls : 'off'}" id="lbl-${e.id}">${present?'Present':'Absent'}</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('tableTitle').textContent = `${currentMeal} Attendance`;
+  updateBulkInfo();
+}
+
+// ──────────────────────────────────────────────
+//  ACTIONS
+// ──────────────────────────────────────────────
+function switchMeal(meal) {
+  currentMeal = meal;
+  document.querySelectorAll('.meal-tab').forEach(t => t.classList.toggle('active', t.dataset.meal===meal));
+  renderAll();
+}
+function toggleEmp(empId, checked) {
+  attendance[attKey(getDate(), currentMeal, empId)] = checked;
+  const lbl    = document.getElementById(`lbl-${empId}`);
+  const onCls  = currentMeal==='Breakfast'?'b-on':currentMeal==='Dinner'?'d-on':'on';
+  if (lbl) { lbl.textContent = checked?'Present':'Absent'; lbl.className = `toggle-label ${checked?onCls:'off'}`; }
+  // update slider class on the sibling span
+  const toggle = lbl && lbl.previousElementSibling;
+  const slider = toggle && toggle.querySelector('.slider');
+  if (slider) {
+    const sliderCls = currentMeal==='Breakfast'?'b-s':currentMeal==='Dinner'?'d-s':'';
+    slider.className = 'slider' + (checked && sliderCls ? ' '+sliderCls : '');
+  }
+  saveLocal(); renderStats();
+}
+function markAll(present) {
+  const d = getDate();
+  employees.forEach(e => { attendance[attKey(d, currentMeal, e.id)] = present; });
+  saveLocal(); renderAll();
+}
+function toggleSelectAll(cb) {
+  document.querySelectorAll('.emp-check').forEach(c => c.checked = cb.checked);
+  updateBulkInfo();
+}
+function updateBulkInfo() {
+  document.getElementById('bulkInfo').textContent = `${document.querySelectorAll('.emp-check:checked').length} selected`;
+}
+function bulkSet(present) {
+  const d = getDate();
+  document.querySelectorAll('.emp-check:checked').forEach(cb => { attendance[attKey(d, currentMeal, cb.dataset.id)] = present; });
+  saveLocal(); renderAll();
+}
+
+// ──────────────────────────────────────────────
+//  SETTINGS
+// ──────────────────────────────────────────────
+function saveSettings() {
+  settings.sheetsUrl = document.getElementById('sheetsUrl').value.trim();
+  settings.empSheet  = document.getElementById('empSheet').value.trim() || 'Employees';
+  settings.attSheet  = document.getElementById('attSheet').value.trim() || 'MealAttendance';
+  saveLocal();
+  toast('Settings saved.', 'success');
+  if (settings.sheetsUrl) reloadEmployees();
+}
+async function testConnection() {
+  const url = document.getElementById('sheetsUrl').value.trim();
+  if (!url) { toast('Enter a URL first.', 'error'); return; }
+  setStatus('loading', 'Testing…');
+  try {
+    const res  = await fetch(`${url}?action=ping`);
+    const data = await res.json();
+    setStatus('connected', 'Connected');
+    toast('✅ ' + (data.message || 'Connection successful!'), 'success');
+  } catch {
+    setStatus('disconnected', 'Unreachable');
+    toast('Connection failed. Check the URL and ensure access is set to "Anyone".', 'error');
+  }
+}
+
+// ──────────────────────────────────────────────
+//  PAGE NAV
+// ──────────────────────────────────────────────
+function openPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.page-tab').forEach(t => t.classList.toggle('active', t.dataset.page===name));
+  document.getElementById('page-'+name).classList.add('active');
+  if (name==='settings') {
+    if (settings.sheetsUrl) document.getElementById('sheetsUrl').value = settings.sheetsUrl;
+    if (settings.empSheet)  document.getElementById('empSheet').value  = settings.empSheet;
+    if (settings.attSheet)  document.getElementById('attSheet').value  = settings.attSheet;
+  }
+}
+
+// ──────────────────────────────────────────────
+//  INIT
+// ──────────────────────────────────────────────
+function init() {
+  const dp = document.getElementById('datePicker');
+  dp.value = todayStr();
+  dp.addEventListener('change', renderAll);
+
+  const now = new Date();
+  document.getElementById('headerDate').textContent = now.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  document.getElementById('subDate').textContent    = now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  if (settings.sheetsUrl) {
+    setStatus('connected', `Connected · ${employees.length} employees`);
+    if (employees.length === 0) reloadEmployees();
+  }
+  renderAll();
+}
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
