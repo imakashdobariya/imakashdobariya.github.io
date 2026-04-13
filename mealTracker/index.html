@@ -260,6 +260,14 @@
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
+// PASS
+const APP_PASSWORD = "7898";
+
+const userPass = prompt("Enter Admin Password:");
+if (userPass !== APP_PASSWORD) {
+  document.body.innerHTML = "<h1>Access Denied</h1>";
+}
+  
 // ──────────────────────────────────────────────
 //  STATE
 // ──────────────────────────────────────────────
